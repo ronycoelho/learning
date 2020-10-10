@@ -1,0 +1,92 @@
+---
+title: "EDA_automated_for_character"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Reproduzindo [How to Automate Exploratory Analysis Plots](https://www.r-bloggers.com/2020/10/how-to-automate-exploratory-analysis-plots/?utm_source=feedburner&utm_medium=email&utm_campaign=Feed%3A+RBloggers+%28R+bloggers%29)
+
+```{r}
+library(tidyverse) # include ggplot2, purrr and some others usefull packages
+library(cowplot)
+library(ggsci) # nice palletes =)
+# data
+
+dt <- as_tibble(Titanic)
+```
+
+```{r}
+dt.with.ch <- dt %>% 
+   select_if(is.character)
+
+names <- names(dt.with.ch)
+names <- set_names(names)
+```
+
+
+```{r}
+scale_color <- pal_jco()(10)
+
+scales::show_col(scale_color)
+```
+
+```{r}
+dt %>% 
+    count(Class) %>% 
+    mutate(prop = round(n/sum(n), 2)) %>% 
+    ggplot(aes(x = fct_reorder(Class, prop),
+               y = prop,
+               color = Class)) +
+    scale_color_manual(values = scale_color) +
+    scale_y_continuous(limits = c(0,1))+
+    geom_segment(aes(xend = Class, yend = 0),
+                 show.legend = F) +
+    geom_point(aes(size = prop),
+               show.legend = F) +
+    geom_label(aes(label = prop, size = prop*10), 
+               fill = "white", 
+               hjust = "inward",
+               show.legend = F) +
+    labs(
+        x = "Class"
+    ) +
+    coord_flip() +
+    theme_minimal()
+```
+
+```{r}
+plot_frequency <- function(x) {
+    
+    scale_color <- pal_jco()(10)
+    
+    dt %>% 
+        count(.data[[x]]) %>% 
+        mutate(prop = round(n/sum(n), 2)) %>% 
+        ggplot(aes(x = fct_reorder(.data[[x]], prop),
+                   y = prop,
+                   color = .data[[x]])) +
+        scale_color_manual(values = scale_color) +
+        geom_segment(aes(xend = .data[[x]], yend = 0),
+                     show.legend = F) +
+        geom_point(aes(size = prop),
+                   show.legend = F) +
+        scale_y_continuous(limits = c(0,1))+
+        geom_label(aes(label = prop, size = prop*10), 
+                   fill = "white", 
+                   hjust = "inward",
+                   show.legend = F) +
+        labs(
+            x = x
+        ) +
+        coord_flip() +
+        theme_minimal()
+}
+```
+
+```{r}
+all_plots <- map(names, plot_frequency)
+cowplot::plot_grid(plotlist = all_plots)
+```
