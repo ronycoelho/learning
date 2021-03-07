@@ -1,0 +1,168 @@
+
+# datacamp
+https://campus.datacamp.com/courses/interactive-maps-with-leaflet-in-r/setting-up-interactive-web-maps?ex=1
+
+```{r}
+library(leaflet)
+library(ggmap)
+```
+
+```{r}
+leaflet()
+```
+
+```{r}
+# Load the leaflet library
+library(leaflet)
+
+# Create a leaflet map with default map tile using addTiles()
+leaflet() %>%
+    addTiles()
+```
+
+
+```{r}
+# Print the providers list included in the leaflet library
+providers
+
+# Print only the names of the map tiles in the providers list 
+names(providers)
+
+# Use str_detect() to determine if the name of each provider tile contains the string "CartoDB"
+str_detect(names(providers), "CartoDB")
+
+# Use str_detect() to print only the provider tile names that include the string "CartoDB"
+names(providers)[str_detect(names(providers), "CartoDB")]
+```
+
+# CartoDB
+```{r}
+leaflet() %>% 
+    addProviderTiles(provider = "CartoDB")
+```
+
+# Esri
+```{r}
+leaflet() %>% 
+    addProviderTiles(provider = "Esri")
+```
+
+#
+```{r}
+leaflet() %>% 
+    addProviderTiles(provider = "CartoDB.PositronNoLabels" )
+```
+
+
+```{r}
+leaflet()  %>% 
+    addProviderTiles("CartoDB")  %>% 
+    setView(lat = 40.7, lng = -74.0, zoom = 10)
+```
+
+```{r}
+leaflet()  %>% 
+    addProviderTiles("CartoDB")  %>% 
+    setView(lng = -73.98575, lat = 40.74856, zoom = 6)
+
+> dc_hp
+    hq....................lon...lat
+1   <chr>               <dbl> <dbl>
+2 1 DataCamp - NYC     -74.0   40.7
+3 2 DataCamp - Belgium   4.72  50.9
+
+
+dc_hq <- data.frame(hp = c("DataCamp - NYC", "DataCamp - Belgium"),
+                    lon = c(-74, 4.72),
+                    lat = c(40.7, 50.9))
+
+leaflet() %>% 
+    addProviderTiles( "CartoDB.PositronNoLabels") %>% 
+    setView(lng = dc_hq$lon[2], lat = dc_hq$lat[2], zoom = 4)
+```
+
+create an interactive web map that will always be focused on a specific area
+```{r}
+leaflet(options = 
+        leafletOptions(minZoom = 14, dragging = FALSE))  %>% 
+  addProviderTiles("CartoDB")  %>% 
+  setView(lng = -73.98575, lat = 40.74856, zoom = 14) 
+```
+
+
+```{r}
+leaflet(options = leafletOptions(
+                    # Set minZoom and dragging 
+                    minZoom = 12, dragging = T))  %>% 
+  addProviderTiles("CartoDB")  %>% 
+  
+  # Set default zoom level 
+  setView(lng = dc_hq$lon[2], lat = dc_hq$lat[2], zoom = 14) %>% 
+  
+  # Set max bounds of map 
+  setMaxBounds(lng1 = dc_hq$lon[2] + .05, 
+               lat1 = dc_hq$lat[2] + .05, 
+               lng2 = dc_hq$lon[2] - .05, 
+               lat2 = dc_hq$lat[2] - .05) 
+```
+
+```{r}
+leaflet() %>%
+  addProviderTiles("Stamen.Watercolor") %>%
+  addProviderTiles("Stamen.TonerHybrid")
+
+leaflet()  %>% 
+    addProviderTiles("CartoDB")  %>% 
+    addMarkers(lng = -73.98575, lat = 40.74856)
+
+
+
+# Plot DataCamp's NYC HQ
+leaflet() %>% 
+    addProviderTiles("CartoDB") %>% 
+    addMarkers(lng = dc_hq$lon[1], lat = dc_hq$lat[1])
+
+# Plot DataCamp's NYC HQ with zoom of 12    
+leaflet() %>% 
+    addProviderTiles("CartoDB") %>% 
+    addMarkers(lng = -73.98575, lat = 40.74856)  %>% 
+    setView(lng = -73.98575, lat = 40.74856, zoom = 12) 
+
+
+# Plot both DataCamp's NYC and Belgium locations
+leaflet() %>% 
+    addProviderTiles("CartoDB") %>% 
+    addMarkers(lng = dc_hq$lon, lat = dc_hq$lat)
+
+```
+
+
+Adding Popups and Storing your Map
+To make our map more informative we can add popups. To add popups that appear when a marker is clicked we need to specify the popup argument in the addMarkers() function.
+```{r}
+dc_nyc <- 
+    leaflet() %>% 
+        addTiles() %>% 
+        addMarkers(lng = -73.98575, lat = 40.74856, 
+                   popup = "DataCamp - NYC") 
+
+dc_nyc %>% 
+    setView(lng = -73.98575, lat = 40.74856, 
+            zoom = 5)
+
+# Store leaflet hq map in an object called map
+ map <- leaflet() %>%
+          addProviderTiles("CartoDB") %>%
+          # Use dc_hq to add the hq column as popups
+          addMarkers(lng = dc_hq$lon, lat = dc_hq$lat,
+                     popup = dc_hq$hq)
+
+# Center the view of map on the Belgium HQ with a zoom of 5 
+map_zoom <- map %>%
+      setView(lat = 50.881363, lng = 4.717863,
+              zoom = 5)
+
+# Print map_zoom
+map_zoom
+```
+
