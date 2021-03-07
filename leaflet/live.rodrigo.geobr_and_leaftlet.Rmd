@@ -1,0 +1,191 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(geobr)
+library(gganimate)
+library(leaflet)
+library(colorspace)
+library()
+
+```
+
+Live do Rodrigo Silva
+https://www.youtube.com/watch?v=jIX4PxRtM3s
+
+Code: https://github.com/Prof-Rodrigo-Silva/ScriptR/blob/master/Live06032021/Covid-LIVE.R
+
+```{r}
+corona <- coronabr::get_corona_br(uf = "RS")
+```
+
+```{r}
+rs <- read_municipality(code_muni = "RS", year = 2018)
+```
+
+```{r}
+linhas <- c(1,2)
+
+rs <- rs[-linhas, ]
+```
+
+
+```{r}
+dev.off()
+windows(width = 12, height = 6)
+ggplot(rs) +
+  geom_sf(fill = "#2D3E50",
+          color = "#FEBF57",
+          size = .15)
+```
+
+
+```{r}
+colunas <- c(3,4)
+
+rs <- rs[,-colunas]
+
+corona.rs <- corona.rs %>%
+  filter(date == max(date) )
+
+```
+
+```{r}
+merged <- merge(rs, corona.rs, by.x = "code_muni", by.y = "city_ibge_code")
+```
+
+
+```{r}
+map <- leaflet::leaflet(merged) %>% 
+  leaflet::addTiles()
+
+map %>% leaflet::addPolygons()
+```
+
+```{r}
+dev.off()
+windows(width = 12, height = 6)
+
+map %>% leaflet::addPolygons(
+  fillColor = ~ cores(deaths)
+  weight = 1, # espessura da linha
+  opacity = .5, # da linha
+  color = "blue", # cor do preenchimento
+  dashArray = "1", # tipo de linha
+  fillOpacity = 0 # opacidade do fundo
+)
+```
+
+# paleta de cores
+```{r}
+corona.rs %>% glimpse() 
+  filter()
+
+library(colorspace)  
+bins <- c(0,10, 20, 50, 100, 200, 500, 1000,Inf)
+pal <- leaflet::colorBin("YlOrRd", domain = corona.rs$last_available_deaths, bins = bins)
+```
+
+
+```{r}
+
+map %>% addPolygons(
+  fillColor = ~pal(last_available_deaths),
+  weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "1",
+  fillOpacity = 0.7
+)                  
+```
+
+# destaque do mun.
+```{r}
+#Add Interatividade
+map %>% addPolygons(
+  fillColor = ~pal(last_available_deaths),
+  weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "1",
+  fillOpacity = 0.7,
+  highlight = highlightOptions(
+    weight = 5,
+    color = "#666",
+    dashArray ="",
+    fillOpacity = 0.7,
+    bringToFront = TRUE))
+```
+
+# criação de label
+```{r}
+label <- sprintf(
+  "<strong>%s</strong></br>%g Confirmados</br>%g Óbitos",
+  corona.rs$city, corona.rs$last_available_confirmed, corona.rs$last_available_deaths
+) %>% lapply(htmltools::HTML)
+```
+
+# Label
+```{r}
+map %>% addPolygons(
+  fillColor = ~pal(last_available_deaths),
+  weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "1",
+  fillOpacity = 0.7,
+  highlight = highlightOptions(
+    weight = 5,
+    color = "#666",
+    dashArray ="",
+    fillOpacity = 0.7,
+    bringToFront = TRUE),
+  label = label,
+  labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto"
+  ))
+```
+
+# Legenda
+```{r}
+# Para usar addProviderTiles com add add addPolygons,
+# a cada novo layer deve-se adicionar o argumento data
+
+# Ver: https://bookdown.org/nicohahn/making_maps_with_r5/docs/leaflet.html
+
+leaflet() %>%   
+  addProviderTiles(providers$Esri.WorldGrayCanvas) %>% 
+  addPolygons(
+  data = merged, 
+  fillColor = ~pal(last_available_deaths),
+  weight = 2,
+  opacity = 1,
+  color = "white",
+  dashArray = "1",
+  fillOpacity = 0.7,
+  highlight = highlightOptions(
+    weight = 5,
+    color = "#666",
+    dashArray ="",
+    fillOpacity = 0.7,
+    bringToFront = TRUE),
+  label = label,
+  labelOptions = labelOptions(
+    style = list("font-weight" = "normal", padding = "3px 8px"),
+    textsize = "15px",
+    direction = "auto")) %>% 
+  addLegend(data = merged,       
+             pal = pal,
+                   values = ~ last_available_deaths,
+                   opacity = 0.7,
+                   title = "Casos de óbitos",
+                   position = "bottomright")
+```
+
