@@ -9,6 +9,8 @@
 
 - [TidyPG cheatsheet: Criando tabelas a partir de outras - parte 1](https://rpg.consudata.com.br/posts/2021-01-03-tidypg-cheatsheet-criando-tabelas-a-partir-de-outras-parte-1/)
 
+- [Joins no R e no PostgreSQL](https://rpg.consudata.com.br/posts/2021-01-03-joins-no-r-e-no-postgresql/)
+
 -----------------------------------------------------
 
 - [Repositório do Curso](https://github.com/ronycoelho/rpg3/tree/master/data-raw)
