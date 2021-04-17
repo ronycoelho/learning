@@ -15,3 +15,6 @@
 
 - [Repositório do Curso](https://github.com/ronycoelho/rpg3/tree/master/data-raw)
 - [Repositório do curso de Ricardo Silveira](https://github.com/rsilveirafh/RPostgreSQL)
+
+------------------------------------------------------
+- [PostgreSQL Exercises](https://pgexercises.com/)
