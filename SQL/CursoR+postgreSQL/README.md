@@ -28,3 +28,5 @@
 - [Pacote DM para visualização da organização das tabelas](https://krlmlr.github.io/dm/articles/dm.html)
 
 - [B-Tree Tutorial - An Introduction to B-Trees](https://www.youtube.com/watch?v=C_q5ccN84C8)
+
+- [SQL Indexing and Tuning e-Book](https://use-the-index-luke.com/)
