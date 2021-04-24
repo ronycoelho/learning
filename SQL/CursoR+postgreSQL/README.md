@@ -15,6 +15,8 @@
 
 - [Restrições no PostgreSQL](https://direito.consudata.com.br/rpsql/restricoes/)
 
+- [Como subir múltiplos e grandes arquivos para o PostgreSQL com R](https://rpg.consudata.com.br/posts/2021-01-04-como-subir-mltiplos-e-grandes-arquivos-para-o-postgresql-com-r/)
+
 
 
 -----------------------------------------------------
