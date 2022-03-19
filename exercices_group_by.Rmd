@@ -1,0 +1,62 @@
+```{r}
+iris <- iris %>% as.tibble()
+
+iris.sel.1 <- iris %>% 
+  select(Species, Petal.Length)
+
+
+iris.sel.1 %>% 
+  mutate(Petal.Length = Petal.Length*10) %>%
+  mutate(new = rep(c("a", "b"), nrow(iris.sel.1)/2)) %>% 
+  group_by(Species) %>% 
+  #  filter(Species == "setosa") %>% 
+  summarise(media = mean(Petal.Length))
+
+# Qdo agrupa apenas por uma variavel, o resultado retorna sem agrupamento
+
+iris.sel.1 %>% 
+  mutate(Petal.Length = Petal.Length*10) %>%
+  mutate(new = rep(c("a", "b"), nrow(iris.sel.1)/2)) %>% 
+  group_by(Species, new) %>% 
+  #  filter(Species == "setosa") %>% 
+  summarise(media = mean(Petal.Length))
+
+# Qdo agrupa por mais de uma variavel, o resultado retorna com agrupamento restante
+
+iris.sel.1 %>% 
+  mutate(Petal.Length = Petal.Length*10) %>%
+  mutate(new = rep(c("a", "b"), nrow(iris.sel.1)/2)) %>% 
+  mutate(new.2 = rep(c("z", "x"), each = nrow(iris.sel.1)/2)) %>% 
+  group_by(Species, new, new.2) %>% 
+  #  filter(Species == "setosa") %>% 
+  summarise(media = mean(Petal.Length)) 
+
+# Neste caso com três grupos, o summarize desfez apenas o último, mantendo os dois primeiros. Os dados continuam agrupados. Para desfazes, utilizar o argumento group. 
+
+iris.sel.1 %>% 
+  mutate(Petal.Length = Petal.Length*10) %>%
+  mutate(new = rep(c("a", "b"), nrow(iris.sel.1)/2)) %>% 
+  mutate(new.2 = rep(c("z", "x"), each = nrow(iris.sel.1)/2)) %>% 
+  group_by(Species, new, new.2) %>% 
+  #  filter(Species == "setosa") %>% 
+  summarise(media = mean(Petal.Length),  .groups = "drop")
+
+# A média de toodas as variaveis
+iris %>% 
+  group_by(Species) %>% 
+  summarise_all(mean)
+
+# 
+iris %>% 
+  group_by(Species) %>% 
+  summarise_at(vars(contains("Width")), mean)
+
+mtcars <- mtcars %>% 
+  rownames_to_column(var = "cars")
+
+mtcars %>% 
+  group_by(gear, am) %>% 
+  summarise(n = n()) %>% 
+  janitor::adorn_totals(where = c("col", "row"))
+```
+
