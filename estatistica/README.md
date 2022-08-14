@@ -5,3 +5,5 @@
 - [ESTATÍSTICA BÁSICA](http://www.leg.ufpr.br/~paulojus/estbas/)
 
 - [R package reviews {report} How To Report Results]()
+
+- [corrmorant](https://github.com/r-link/corrmorant) [see](https://github.com/richardvogg/tidy-tuesdays/blob/master/2022/Week%2031%20-%20FerrisWheels/ferriswheels.R)
